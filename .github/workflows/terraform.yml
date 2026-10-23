@@ -24,7 +24,7 @@ concurrency:
 env:
   TF_IN_AUTOMATION: true
   TF_VERSION: "1.12.2"
-  YC_SERVICE_ACCOUNT_KEY_FILE: ${{ runner.temp }}/yc-key.json
+  YC_SERVICE_ACCOUNT_KEY_FILE: /tmp/yc-key.json
   AWS_ACCESS_KEY_ID: ${{ secrets.YC_STORAGE_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_STORAGE_SECRET_KEY }}
   AWS_DEFAULT_REGION: ru-central1

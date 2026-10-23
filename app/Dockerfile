@@ -4,9 +4,12 @@ FROM nginxinc/nginx-unprivileged:1.27-alpine
 
 ARG APP_VERSION=dev
 
-# Статика и версия сборки.
+# Непривилегированный образ по умолчанию работает от UID 101,
+# поэтому статику и версию сборки кладём от root и возвращаем права.
+USER root
 COPY site/ /usr/share/nginx/html/
-RUN echo "${APP_VERSION}" > /usr/share/nginx/html/version
+RUN echo "${APP_VERSION}" > /usr/share/nginx/html/version \
+    && chown -R 101:101 /usr/share/nginx/html
 
 USER 101
 EXPOSE 8080
