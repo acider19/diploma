@@ -1,0 +1,22 @@
+---
+# Версия Kubernetes и сетевой плагин фиксируются, чтобы защита проходила
+# на той же конфигурации, что и отладка.
+kube_version: v1.31.4
+kube_network_plugin: calico
+kube_proxy_mode: ipvs
+kube_service_addresses: 10.233.0.0/18
+kube_pods_subnet: 10.233.64.0/18
+
+# Забирать kubeconfig на локальную машину.
+kubeconfig_localhost: true
+kubectl_localhost: true
+
+# Минимальный набор аддонов: мониторинг и ingress ставятся отдельно через Helm.
+metrics_server_enabled: true
+ingress_nginx_enabled: false
+cert_manager_enabled: false
+helm_enabled: false
+local_path_provisioner_enabled: false
+
+# Экономим ресурсы на прерываемых нодах.
+docker_keepalived_vip_interface: ""

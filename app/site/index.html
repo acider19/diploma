@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diploma App — Netology DevOps</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #151b2e;
+      --accent: #6ea8fe;
+      --text: #e8ecf7;
+      --muted: #98a2b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #1b2540, var(--bg) 60%);
+      color: var(--text);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+    }
+    main {
+      width: min(680px, 100%);
+      background: var(--card);
+      border: 1px solid #263049;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .subtitle { color: var(--muted); margin: 0 0 24px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(110, 168, 254, .12);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    dl {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 10px 16px;
+      margin: 24px 0 0;
+    }
+    dt { color: var(--muted); }
+    dd { margin: 0; font-variant-numeric: tabular-nums; }
+    .ok { color: #51cf66; font-weight: 600; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
+    code { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="badge">Netology · DevOps Engineer</span>
+    <h1>Diploma Application</h1>
+    <p class="subtitle">Тестовое приложение для дипломного проекта в Yandex Cloud</p>
+
+    <p><span class="ok">●</span> Сервис запущен и отвечает на запросы</p>
+
+    <dl>
+      <dt>Окружение</dt><dd>Kubernetes · Yandex Cloud</dd>
+      <dt>Версия сборки</dt><dd><code id="version">загрузка…</code></dd>
+      <dt>Pod</dt><dd><code id="hostname">—</code></dd>
+      <dt>Мониторинг</dt><dd>Prometheus · Grafana · Alertmanager</dd>
+      <dt>CI/CD</dt><dd>GitHub Actions</dd>
+    </dl>
+
+    <footer>
+      Страница отдаётся nginx из контейнера, собранного в CI и
+      задеплоенного в Kubernetes.
+    </footer>
+  </main>
+
+  <script>
+    fetch('version', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.text() : 'unknown'))
+      .then((v) => { document.getElementById('version').textContent = v.trim(); })
+      .catch(() => { document.getElementById('version').textContent = 'unknown'; });
+
+    // Имя пода полезно при проверке балансировки между репликами.
+    document.getElementById('hostname').textContent =
+      window.location.hostname || 'unknown';
+  </script>
+</body>
+</html>

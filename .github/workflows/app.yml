@@ -1,0 +1,115 @@
+name: App CI/CD
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths-ignore:
+      - "infra/**"
+      - "k8s/**"
+      - "docs/**"
+      - "*.md"
+  pull_request:
+    paths:
+      - "app/**"
+      - ".github/workflows/app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: cr.yandex/crptd2h3nubo1b64a071
+  IMAGE_NAME: diploma-app
+  CHART_PATH: app/helm/app
+  RELEASE_NAME: diploma-app
+  NAMESPACE: app
+
+jobs:
+  build:
+    name: Сборка и публикация образа
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Логин в Yandex Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_SA_KEY_JSON }}
+
+      - name: Сборка и push
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Деплой по тегу
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: azure/setup-helm@v4
+
+      - name: Kubeconfig
+        run: |
+          mkdir -p "$HOME/.kube"
+          printf '%s' '${{ secrets.KUBECONFIG_B64 }}' | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Image pull secret для Yandex Container Registry
+        env:
+          YC_SA_KEY_JSON: ${{ secrets.YC_SA_KEY_JSON }}
+        run: |
+          kubectl create secret docker-registry yc-registry \
+            --namespace "$NAMESPACE" \
+            --docker-server=cr.yandex \
+            --docker-username=json_key \
+            --docker-password="$YC_SA_KEY_JSON" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Helm upgrade
+        run: |
+          helm upgrade --install "$RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$NAMESPACE" \
+            --create-namespace \
+            --set image.tag="${GITHUB_REF_NAME}" \
+            --set imagePullSecrets[0].name=yc-registry \
+            --set ingress.host="${{ vars.APP_HOST || 'app.example.com' }}" \
+            --set ingress.tls.enabled=${{ vars.APP_TLS_ENABLED || 'false' }} \
+            --wait --timeout 5m
+
+      - name: Статус
+        run: |
+          kubectl get deploy,pods,ingress -n "$NAMESPACE" -o wide
+          kubectl rollout status "deploy/$RELEASE_NAME" -n "$NAMESPACE" --timeout=120s

@@ -1,0 +1,35 @@
+# ServiceAccount для деплоя из GitHub Actions. Права ограничены namespace app:
+# CI не должен уметь менять что-либо за его пределами.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deployer
+  namespace: app
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployer
+  namespace: app
+rules:
+  - apiGroups: ["", "apps", "batch", "networking.k8s.io", "policy", "autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: deployer
+  namespace: app
+subjects:
+  - kind: ServiceAccount
+    name: deployer
+    namespace: app
+roleRef:
+  kind: Role
+  name: deployer
+  apiGroup: rbac.authorization.k8s.io

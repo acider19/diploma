@@ -1,0 +1,49 @@
+# Значения для ingress-nginx. NLB из Terraform проксирует 80/443 на NodePort
+# 30080/30443, поэтому сервис контроллера имеет тип NodePort.
+controller:
+  replicaCount: 2
+
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: true
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+  # Две реплики разносятся по нодам, чтобы пережить остановку прерываемой ВМ.
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+          app.kubernetes.io/component: controller
+
+  admissionWebhooks:
+    enabled: true
+    patch:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi

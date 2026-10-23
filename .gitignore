@@ -1,0 +1,38 @@
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+**/terraform.tfvars.local
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Bootstrap хранит state локально: бакета для backend ещё не существует
+infra/bootstrap/*.tfstate
+infra/bootstrap/*.tfstate.*
+
+# Ansible / Kubespray
+infra/ansible/kubespray/
+infra/ansible/inventory.ini
+infra/ansible/group_vars/all/*.local.yml
+*.retry
+.venv/
+venv/
+
+# Секреты
+*.key.json
+authorized_key.json
+kubeconfig*
+.env
+.env.*
+
+# ОС и редакторы
+.DS_Store
+.idea/
+.vscode/
+*.log

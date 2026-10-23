@@ -1,0 +1,45 @@
+replicaCount: 2
+
+image:
+  repository: cr.yandex/crptd2h3nubo1b64a071/diploma-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  # Переопределяется при деплое, пока домен не настроен.
+  host: app.example.com
+  path: /
+  tls:
+    enabled: false
+    clusterIssuer: letsencrypt-prod
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

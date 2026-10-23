@@ -1,0 +1,28 @@
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=${ssh_key_path}
+ansible_python_interpreter=/usr/bin/python3
+
+[all]
+diploma-master ansible_host=${master_public} ip=${master_private}
+%{ for w in workers ~}
+${w.name} ansible_host=${w.public} ip=${w.private}
+%{ endfor ~}
+
+[kube_control_plane]
+diploma-master
+
+[kube_control_plane:vars]
+supplementary_addresses_in_ssl_keys=["${api_host}"]
+
+[etcd]
+diploma-master
+
+[kube_node]
+%{ for w in workers ~}
+${w.name}
+%{ endfor ~}
+
+[k8s_cluster:children]
+kube_control_plane
+kube_node
