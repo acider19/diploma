@@ -62,7 +62,7 @@ variable "master" {
     cores         = 2
     memory_gb     = 4
     core_fraction = 50
-    disk_gb       = 20
+    disk_gb       = 10
     disk_type     = "network-ssd"
   }
 }
@@ -77,12 +77,12 @@ variable "workers" {
     disk_type     = string
   })
   default = {
-    count         = 2
+    count         = 1
     cores         = 2
     memory_gb     = 4
     core_fraction = 50
     disk_gb       = 20
-    disk_type     = "network-ssd"
+    disk_type     = "network-hdd"
   }
 }
 
