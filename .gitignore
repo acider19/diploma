@@ -36,3 +36,7 @@ kubeconfig*
 .idea/
 .vscode/
 *.log
+
+# Временные файлы для работы
+STATUS.md
+TZ.md
