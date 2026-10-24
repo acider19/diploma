@@ -93,5 +93,5 @@ cd ../../k8s
 | `YC_STORAGE_ACCESS_KEY` / `YC_STORAGE_SECRET_KEY` | Static key для S3 backend |
 | `KUBECONFIG_B64` | `base64 -i ~/.kube/config` |
 
-Переменные репозитория: `APP_HOST` (например `app.example.com`),
+Переменные репозитория: `APP_HOST` (например `app.muravskij.ru`),
 `APP_TLS_ENABLED` (`true` после настройки cert-manager).

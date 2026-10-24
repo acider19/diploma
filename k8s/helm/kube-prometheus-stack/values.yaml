@@ -15,9 +15,8 @@ grafana:
   ingress:
     enabled: true
     ingressClassName: nginx
-    # Подставляется при деплое: grafana.<домен> или адрес по IP.
     hosts:
-      - grafana.example.com
+      - grafana.muravskij.ru
     path: /
     tls: []
   resources:

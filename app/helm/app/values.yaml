@@ -21,8 +21,8 @@ service:
 ingress:
   enabled: true
   className: nginx
-  # Переопределяется при деплое, пока домен не настроен.
-  host: app.example.com
+  # Переопределяется при деплое.
+  host: app.muravskij.ru
   path: /
   tls:
     enabled: false

@@ -22,7 +22,7 @@ resource "yandex_dns_recordset" "app" {
   count = var.manage_dns ? 1 : 0
 
   zone_id = yandex_dns_zone.this[0].id
-  name    = local.app_hostname
+  name    = "app"
   type    = "A"
   ttl     = 300
   data    = [local.nlb_ip]
@@ -32,7 +32,7 @@ resource "yandex_dns_recordset" "grafana" {
   count = var.manage_dns ? 1 : 0
 
   zone_id = yandex_dns_zone.this[0].id
-  name    = local.grafana_hostname
+  name    = "grafana"
   type    = "A"
   ttl     = 300
   data    = [local.nlb_ip]
