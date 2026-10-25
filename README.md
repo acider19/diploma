@@ -95,6 +95,7 @@ cd ../../k8s
 | `YC_SA_KEY_JSON` | Ключ сервисного аккаунта (полный JSON) |
 | `YC_STORAGE_ACCESS_KEY` / `YC_STORAGE_SECRET_KEY` | Static key для S3 backend |
 | `KUBECONFIG_B64` | `base64 -i ~/.kube/config` |
+| `SSH_PUBLIC_KEY` | Публичный SSH-ключ, который Terraform прописывает в ВМ |
 
 Переменные репозитория: `APP_HOST` (например `app.muravskij.ru`),
 `APP_TLS_ENABLED` (`true` после настройки cert-manager).
