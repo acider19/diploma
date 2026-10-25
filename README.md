@@ -49,6 +49,34 @@ Yandex Cloud
 
 ---
 
+```mermaid
+flowchart TB
+    Internet([Internet]) -->|80 / 443| NLB["Network Load Balancer<br/>51.250.3.42"]
+    NLB -->|NodePort 30080 / 30443| INGRESS["ingress-nginx<br/>2 реплики"]
+    INGRESS -->|HTTPS / TLS| APP["diploma-app<br/>app.muravskij.ru"]
+    INGRESS -->|HTTPS / TLS| GRAFANA["Grafana<br/>grafana.muravskij.ru"]
+    GRAFANA -->|Prometheus / Alertmanager| MON["kube-prometheus-stack"]
+
+    subgraph Yandex_Cloud ["Yandex Cloud → ru-central1-d"]
+        VPC["VPC diploma-net"] --> SUB1["subnet a 10.10.1.0/24"]
+        VPC --> SUB2["subnet b 10.10.2.0/24"]
+        VPC --> SUB3["subnet d 10.10.3.0/24"]
+        SUB3 --> MASTER["master 2vCPU/4GB<br/>public IP"]
+        SUB3 --> WORKER1["worker-1 2vCPU/4GB (preemptible)"]
+        SUB3 --> WORKER2["worker-2 2vCPU/4GB (preemptible)"]
+        NAT["NAT-шлюз"] -->|0.0.0.0/0| SUB3
+        MASTER -->|ProxyJump| WORKER1
+        MASTER -->|ProxyJump| WORKER2
+        REGISTRY["Container Registry"] --> APP
+        DNS["Yandex DNS"] -->|A-записи| NLB
+    end
+
+    style APP fill:#e1f5fe,stroke:#01579b
+    style GRAFANA fill:#f3e5f5,stroke:#6a1b9a
+    style INGRESS fill:#fff3e0,stroke:#ef6c00
+    style MON fill:#e8f5e9,stroke:#2e7d32
+```
+
 ## ✨ Что сделано
 
 - **Terraform:** инфраструктура с нуля — VPC, подсети, Security Groups, 3 ВМ, NLB, DNS-зоны, NAT-шлюз
