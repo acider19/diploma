@@ -40,3 +40,6 @@ kubeconfig*
 # Временные файлы для работы
 STATUS.md
 TZ.md
+
+# Артефакты Kubespray: kubeconfig с ключами доступа и бинарник kubectl
+infra/ansible/artifacts/
