@@ -69,7 +69,7 @@ resource "yandex_compute_instance" "worker" {
 
   network_interface {
     subnet_id          = yandex_vpc_subnet.this[local.worker_zone_keys[count.index % length(local.worker_zone_keys)]].id
-    nat                = true
+    nat                = var.workers_public_ip
     security_group_ids = [yandex_vpc_security_group.k8s.id]
   }
 

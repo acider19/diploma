@@ -18,6 +18,13 @@ variable "worker_zones" {
   default     = ["ru-central1-d"]
 }
 
+# Worker-нодам публичный адрес не нужен: доступ к ним идёт через master.
+variable "workers_public_ip" {
+  description = "Выдавать worker-нодам публичный IP (NAT)"
+  type        = bool
+  default     = false
+}
+
 variable "network_cidr" {
   type    = string
   default = "10.10.0.0/16"

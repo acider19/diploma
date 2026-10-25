@@ -6,8 +6,12 @@ ansible_python_interpreter=/usr/bin/python3
 [all]
 diploma-master ansible_host=${master_public} ip=${master_private}
 %{ for w in workers ~}
-${w.name} ansible_host=${w.public} ip=${w.private}
+${w.name} ansible_host=${w.private} ip=${w.private}
 %{ endfor ~}
+
+# У worker-нод нет публичного адреса, поэтому ходим на них через master.
+[kube_node:vars]
+ansible_ssh_common_args=-o ProxyCommand="ssh -i ${ssh_key_path} -o StrictHostKeyChecking=no -W %h:%p ubuntu@${master_public}"
 
 [kube_control_plane]
 diploma-master

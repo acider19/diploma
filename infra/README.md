@@ -21,8 +21,9 @@ terraform init && terraform apply
 Основная инфраструктура, state в S3:
 
 - VPC `diploma-net` и подсети в `ru-central1-a/b/d`;
-- security groups (SSH с домашнего IP, API 6443, 80/443, NodePort);
-- master (2 vCPU/4 ГБ, SSD 20 ГБ) и worker-ноды (preemptible);
+- security groups (SSH, API 6443, 80/443, NodePort);
+- master (2 vCPU/4 ГБ, SSD 10 ГБ) с публичным IP и worker-ноды
+  (preemptible, без NAT — доступ через master как bastion);
 - внешний NLB на 80/443 → NodePort 30080/30443;
 - DNS-зона и записи (опционально, `manage_dns = true`).
 

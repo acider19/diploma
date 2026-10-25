@@ -6,7 +6,8 @@
 - SSH-ключ `~/.ssh/id_ed25519` (публичная часть подставляется в ВМ);
 - профиль `diploma` в `~/.aws/credentials` для S3 backend;
 - ключ сервисного аккаунта в `YC_SERVICE_ACCOUNT_KEY_FILE`;
-- квоты: ≥ 80 ГБ SSD, ≥ 8 vCPU, ≥ 6 публичных IP (см. `quota.md`).
+- квоты: ≥ 60 ГБ HDD, ≥ 6 vCPU в зоне (см. `quota.md`).
+- публичный IP нужен только master и NLB, worker-ноды живут без NAT.
 
 ## 1. Bootstrap
 

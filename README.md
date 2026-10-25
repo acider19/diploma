@@ -31,7 +31,7 @@ Yandex Cloud
  ├─ Object Storage        — backend Terraform state
  ├─ Container Registry    — образы приложения (создаётся Terraform)
  ├─ VPC + 3 подсети a/b/d — сеть кластера
- ├─ 1 master + 2 worker   — Kubespray, worker-ноды preemptible
+ ├─ 1 master + 2 worker   — Kubespray, worker-ноды preemptible и без публичных IP
  ├─ NLB                   — публичный вход на 80/443
  └─ Yandex Cloud DNS      — зона muravskij.ru
 ```

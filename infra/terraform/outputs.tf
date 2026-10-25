@@ -35,7 +35,7 @@ output "master_private_ip" {
 }
 
 output "worker_public_ips" {
-  value = [for w in yandex_compute_instance.worker : w.network_interface[0].nat_ip_address]
+  value = compact([for w in yandex_compute_instance.worker : w.network_interface[0].nat_ip_address])
 }
 
 output "worker_private_ips" {
