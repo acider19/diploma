@@ -45,7 +45,15 @@ variable "ssh_public_key_path" {
 variable "ssh_allowed_cidrs" {
   description = "CIDR, которым разрешён SSH на ноды"
   type        = list(string)
-  default     = ["89.109.45.155/32"]
+  default     = ["0.0.0.0/0"]
+}
+
+# Образ зафиксирован явно: если брать его из data-источника по family,
+# обновление образа в облаке приводит к пересозданию всех ВМ при apply.
+variable "ubuntu_image_id" {
+  description = "ID образа Ubuntu 22.04 для загрузочных дисков нод"
+  type        = string
+  default     = "fd8em71f8oo1hdpali1k"
 }
 
 variable "master" {
@@ -77,7 +85,7 @@ variable "workers" {
     disk_type     = string
   })
   default = {
-    count         = 1
+    count         = 2
     cores         = 2
     memory_gb     = 4
     core_fraction = 50

@@ -3,9 +3,10 @@
 Учебный проект по курсу «DevOps-инженер» (Netology). Инфраструктура, кластер
 Kubernetes, мониторинг и CI/CD полностью описаны кодом и разворачиваются с нуля.
 
-> **Статус:** код инфраструктуры, приложения и пайплайнов готов. Развёртывание
-> приостановлено из-за квот облака: в текущем каталоге доступно 10 ГБ SSD и
-> закрыта зона `ru-central1-a`. Что запросить — см. [docs/quota.md](docs/quota.md).
+> **Статус:** инфраструктура развёрнута в Yandex Cloud, Kubernetes-кластер поднят
+> через Kubespray (1 master + 2 worker), установлен ingress-nginx и
+> kube-prometheus-stack, тестовое приложение и Grafana доступны через домен
+> `muravskij.ru`. CI/CD настроен через GitHub Actions.
 
 ## Архитектура
 
@@ -31,7 +32,8 @@ Yandex Cloud
  ├─ Container Registry    — образы приложения (создаётся Terraform)
  ├─ VPC + 3 подсети a/b/d — сеть кластера
  ├─ 1 master + 2 worker   — Kubespray, worker-ноды preemptible
- └─ NLB                   — публичный вход на 80/443
+ ├─ NLB                   — публичный вход на 80/443
+ └─ Yandex Cloud DNS      — зона muravskij.ru
 ```
 
 ## Структура репозитория
@@ -76,13 +78,14 @@ cd ../../k8s
 
 - [x] Bootstrap: S3-бакет `diploma-tfstate-*`, Container Registry `diploma-app`
 - [x] VPC `diploma-net`, 3 подсети, security groups
-- [x] Terraform: master + worker-ноды (preemptible), NLB, DNS-зона (опционально)
+- [x] Terraform: 1 master + 2 worker (preemptible), NLB, DNS-зона в Yandex Cloud DNS
 - [x] Ansible/Kubespray: установка K8s 1.31, Calico, IPVS
 - [x] Приложение: nginx unprivileged, Dockerfile, Helm-чарт с PDB и пробами
-- [x] Мониторинг: values для kube-prometheus-stack и ingress-nginx
-- [x] CI/CD: Terraform plan/apply, сборка по коммиту, деплой по тегу
-- [ ] Развернуть кластер (блокирует квота — см. `docs/quota.md`)
-- [ ] Подключить домен и HTTPS (после регистрации домена)
+- [x] Мониторинг: kube-prometheus-stack (Prometheus, Grafana, Alertmanager)
+- [x] Ingress: ingress-nginx (NodePort 30080/30443 за NLB)
+- [x] Домен: `muravskij.ru` делегирован в Yandex Cloud DNS
+- [x] CI/CD: Terraform plan/apply, сборка образа по коммиту, деплой по тегу `v*`
+- [ ] HTTPS/cert-manager (после полной прокатки делегирования)
 - [ ] Снять скриншоты для защиты
 
 ## Секреты GitHub Actions

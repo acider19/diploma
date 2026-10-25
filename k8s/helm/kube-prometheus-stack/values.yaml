@@ -15,10 +15,15 @@ grafana:
   ingress:
     enabled: true
     ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
       - grafana.muravskij.ru
     path: /
-    tls: []
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.muravskij.ru
   resources:
     requests:
       cpu: 50m

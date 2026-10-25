@@ -1,7 +1,3 @@
-data "yandex_compute_image" "ubuntu" {
-  family = "ubuntu-2204-lts"
-}
-
 locals {
   ssh_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
 
@@ -26,7 +22,7 @@ resource "yandex_compute_instance" "master" {
 
   boot_disk {
     initialize_params {
-      image_id = data.yandex_compute_image.ubuntu.image_id
+      image_id = var.ubuntu_image_id
       type     = var.master.disk_type
       size     = var.master.disk_gb
     }
@@ -65,7 +61,7 @@ resource "yandex_compute_instance" "worker" {
 
   boot_disk {
     initialize_params {
-      image_id = data.yandex_compute_image.ubuntu.image_id
+      image_id = var.ubuntu_image_id
       type     = var.workers.disk_type
       size     = var.workers.disk_gb
     }
