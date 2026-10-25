@@ -1,5 +1,4 @@
-# Значения для ingress-nginx. NLB из Terraform проксирует 80/443 на NodePort
-# 30080/30443, поэтому сервис контроллера имеет тип NodePort.
+# NLB (Terraform) пробрасывает 80/443 на NodePort 30080/30443
 controller:
   replicaCount: 2
 
@@ -27,7 +26,7 @@ controller:
       cpu: 300m
       memory: 256Mi
 
-  # Две реплики разносятся по нодам, чтобы пережить остановку прерываемой ВМ.
+  # Распределяем по нодам: если ОС остановится, ingress ещё работает
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname

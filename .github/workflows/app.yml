@@ -62,8 +62,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: app
-          # Yandex Container Registry не принимает OCI image index,
-          # который buildx создаёт вместе с provenance/SBOM.
+          # Отключаем OCI-индекс, provenance и SBOM — иначе Yandex Registry не примет образ
           platforms: linux/amd64
           provenance: false
           sbom: false

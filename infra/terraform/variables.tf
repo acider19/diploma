@@ -18,7 +18,7 @@ variable "worker_zones" {
   default     = ["ru-central1-d"]
 }
 
-# Worker-нодам публичный адрес не нужен: доступ к ним идёт через master.
+# Worker'ам нет публичного IP — SSH через master
 variable "workers_public_ip" {
   description = "Выдавать worker-нодам публичный IP (NAT)"
   type        = bool
@@ -55,8 +55,7 @@ variable "ssh_allowed_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-# Образ зафиксирован явно: если брать его из data-источника по family,
-# обновление образа в облаке приводит к пересозданию всех ВМ при apply.
+# Образ Ubuntu зафиксирован, чтобы не пересоздавать ВМ после обновления образа
 variable "ubuntu_image_id" {
   description = "ID образа Ubuntu 22.04 для загрузочных дисков нод"
   type        = string

@@ -1,7 +1,4 @@
-# Значения для kube-prometheus-stack.
-# В self-hosted кластере нет StorageClass, поэтому Prometheus, Alertmanager и
-# Grafana работают на emptyDir: данные живут в пределах жизни пода.
-# Для диплома этого достаточно, в production нужен PVC.
+# Для диплома достаточно — данные хранятся в памяти (emptyDir), не нужны постоянные диски (PVC).
 
 grafana:
   enabled: true
@@ -24,9 +21,7 @@ grafana:
       - secretName: grafana-tls
         hosts:
           - grafana.muravskij.ru
-  # Grafana 13 при старте строит поисковые индексы и на 300m CPU не успевает
-  # отвечать на readiness-пробу за 1 секунду, поэтому лимиты выше, а таймаут
-  # пробы увеличен.
+  # Увеличили лимиты CPU и таймаут пробы: на старте Grafana долго думает и не успевает ответить за 1 секунду
   resources:
     requests:
       cpu: 100m
@@ -56,7 +51,7 @@ prometheus:
         cpu: 500m
         memory: 768Mi
     storageSpec: {}
-    # Чтобы не собирать метрики со служебных namespace без надобности.
+    # Не собираем метрики из служебных namespace без надобности
     podMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false
     ruleSelectorNilUsesHelmValues: false

@@ -21,7 +21,7 @@ service:
 ingress:
   enabled: true
   className: nginx
-  # Переопределяется при деплое.
+  # host и tls задаются при деплое из CI/CD
   host: app.muravskij.ru
   path: /
   tls:
