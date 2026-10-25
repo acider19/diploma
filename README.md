@@ -51,30 +51,64 @@ Yandex Cloud
 
 ```mermaid
 flowchart TB
-    Internet([Internet]) -->|80 / 443| NLB["Network Load Balancer<br/>51.250.3.42"]
-    NLB -->|NodePort 30080 / 30443| INGRESS["ingress-nginx<br/>2 реплики"]
-    INGRESS -->|HTTPS / TLS| APP["diploma-app<br/>app.muravskij.ru"]
-    INGRESS -->|HTTPS / TLS| GRAFANA["Grafana<br/>grafana.muravskij.ru"]
-    GRAFANA -->|Prometheus / Alertmanager| MON["kube-prometheus-stack"]
-
-    subgraph Yandex_Cloud ["Yandex Cloud → ru-central1-d"]
-        VPC["VPC diploma-net"] --> SUB1["subnet a 10.10.1.0/24"]
-        VPC --> SUB2["subnet b 10.10.2.0/24"]
-        VPC --> SUB3["subnet d 10.10.3.0/24"]
-        SUB3 --> MASTER["master 2vCPU/4GB<br/>public IP"]
-        SUB3 --> WORKER1["worker-1 2vCPU/4GB (preemptible)"]
-        SUB3 --> WORKER2["worker-2 2vCPU/4GB (preemptible)"]
-        NAT["NAT-шлюз"] -->|0.0.0.0/0| SUB3
-        MASTER -->|ProxyJump| WORKER1
-        MASTER -->|ProxyJump| WORKER2
-        REGISTRY["Container Registry"] --> APP
-        DNS["Yandex DNS"] -->|A-записи| NLB
+    subgraph Internet["🌐 Internet"]
+        direction TB
+        CLIENT["Пользователь"]
     end
 
-    style APP fill:#e1f5fe,stroke:#01579b
-    style GRAFANA fill:#f3e5f5,stroke:#6a1b9a
-    style INGRESS fill:#fff3e0,stroke:#ef6c00
-    style MON fill:#e8f5e9,stroke:#2e7d32
+    subgraph Edge["🔀 Yandex Cloud Edge"]
+        direction TB
+        NLB["NLB<br/>51.250.3.42"]
+    end
+
+    subgraph K8s_Cluster["☸️ Kubernetes Cluster (ru-central1-d)"]
+        direction TB
+        INGRESS["ingress-nginx (NodePort)<br/>30080 / 30443"]
+        APP["diploma-app<br/>app.muravskij.ru"]
+        GRAFANA["Grafana<br/>grafana.muravskij.ru"]
+        MON["kube-prometheus-stack<br/>Prometheus / Alertmanager"]
+    end
+
+    subgraph Cloud_Infra["☁️ Инфраструктура Yandex"]
+        direction LR
+        VPC["VPC diploma-net"]
+        SUB1["subnet a<br/>10.10.1.0/24"]
+        SUB2["subnet b<br/>10.10.2.0/24"]
+        SUB3["subnet d<br/>10.10.3.0/24"]
+        MASTER["master<br/>2vCPU / 4GB"]
+        W1["worker-1<br/>preemptible"]
+        W2["worker-2<br/>preemptible"]
+        NAT["NAT-шлюз<br/>0.0.0.0/0"]
+        DNS["Yandex DNS<br/>muravskij.ru"]
+        REG["Container Registry"]
+    end
+
+    CLIENT -->|HTTP / HTTPS| NLB
+    NLB --> INGRESS
+    INGRESS -->|TLS / HTTPS| APP
+    INGRESS -->|TLS / HTTPS| GRAFANA
+    GRAFANA --> MON
+
+    SUB3 --> MASTER
+    SUB3 --> W1
+    SUB3 --> W2
+    NAT --> SUB3
+    MASTER -->|SSH ProxyJump| W1
+    MASTER -->|SSH ProxyJump| W2
+    VPC --> SUB1
+    VPC --> SUB2
+    VPC --> SUB3
+    DNS -->|A-записи| NLB
+    REG --> APP
+
+    style APP fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style GRAFANA fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style INGRESS fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style MON fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style NLB fill:#fff8e1,stroke:#f9a825,stroke-width:2px
+    style MASTER fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style W1 fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style W2 fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 ```
 
 ## ✨ Что сделано
