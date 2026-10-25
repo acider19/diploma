@@ -24,13 +24,19 @@ grafana:
       - secretName: grafana-tls
         hosts:
           - grafana.muravskij.ru
+  # Grafana 13 при старте строит поисковые индексы и на 300m CPU не успевает
+  # отвечать на readiness-пробу за 1 секунду, поэтому лимиты выше, а таймаут
+  # пробы увеличен.
   resources:
     requests:
-      cpu: 50m
-      memory: 96Mi
-    limits:
-      cpu: 300m
+      cpu: 100m
       memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 768Mi
+  readinessProbe:
+    timeoutSeconds: 10
+    failureThreshold: 6
   sidecar:
     dashboards:
       enabled: true
