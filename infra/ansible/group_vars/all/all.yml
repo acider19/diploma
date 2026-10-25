@@ -20,3 +20,6 @@ local_path_provisioner_enabled: false
 
 # Экономим ресурсы на прерываемых нодах.
 docker_keepalived_vip_interface: ""
+
+# Метрики kube-proxy должны быть доступны Prometheus с других нод.
+kube_proxy_metrics_bind_address: "0.0.0.0:10249"

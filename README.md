@@ -4,9 +4,14 @@
 Kubernetes, мониторинг и CI/CD полностью описаны кодом и разворачиваются с нуля.
 
 > **Статус:** инфраструктура развёрнута в Yandex Cloud, Kubernetes-кластер поднят
-> через Kubespray (1 master + 2 worker), установлен ingress-nginx и
-> kube-prometheus-stack, тестовое приложение и Grafana доступны через домен
-> `muravskij.ru`. CI/CD настроен через GitHub Actions.
+> через Kubespray (1 master + 2 worker), установлены ingress-nginx,
+> kube-prometheus-stack и cert-manager. Приложение и Grafana доступны по HTTPS
+> на домене `muravskij.ru` с сертификатами Let's Encrypt. CI/CD настроен через
+> GitHub Actions.
+>
+> - приложение: <https://app.muravskij.ru>
+> - Grafana: <https://grafana.muravskij.ru> (`admin` / пароль в секрете
+>   `grafana-admin`)
 
 ## Архитектура
 
@@ -19,7 +24,7 @@ Kubernetes, мониторинг и CI/CD полностью описаны ко
                         │        ingress-nginx         │
                         └───┬──────────┬───────────┬───┘
                             │          │           │
-                  app.<домен>   grafana.<домен>  alertmanager.<домен>
+                app.muravskij.ru  grafana.muravskij.ru
                             │          │
                   ┌─────────▼──┐  ┌────▼──────────────┐
                   │ diploma-app│  │ kube-prometheus-  │
@@ -32,6 +37,7 @@ Yandex Cloud
  ├─ Container Registry    — образы приложения (создаётся Terraform)
  ├─ VPC + 3 подсети a/b/d — сеть кластера
  ├─ 1 master + 2 worker   — Kubespray, worker-ноды preemptible и без публичных IP
+ ├─ NAT-шлюз              — исходящий интернет для worker-нод
  ├─ NLB                   — публичный вход на 80/443
  └─ Yandex Cloud DNS      — зона muravskij.ru
 ```
@@ -79,13 +85,14 @@ cd ../../k8s
 - [x] Bootstrap: S3-бакет `diploma-tfstate-*`, Container Registry `diploma-app`
 - [x] VPC `diploma-net`, 3 подсети, security groups
 - [x] Terraform: 1 master + 2 worker (preemptible), NLB, DNS-зона в Yandex Cloud DNS
+- [x] NAT-шлюз: worker-ноды без публичных IP ходят в интернет через него
 - [x] Ansible/Kubespray: установка K8s 1.31, Calico, IPVS
 - [x] Приложение: nginx unprivileged, Dockerfile, Helm-чарт с PDB и пробами
-- [x] Мониторинг: kube-prometheus-stack (Prometheus, Grafana, Alertmanager)
+- [x] Мониторинг: kube-prometheus-stack (Prometheus, Grafana, Alertmanager), 29/29 целей up
 - [x] Ingress: ingress-nginx (NodePort 30080/30443 за NLB)
 - [x] Домен: `muravskij.ru` делегирован в Yandex Cloud DNS
+- [x] HTTPS: cert-manager, ClusterIssuer `letsencrypt-prod`, сертификаты для app и grafana
 - [x] CI/CD: Terraform plan/apply, сборка образа по коммиту, деплой по тегу `v*`
-- [ ] HTTPS/cert-manager (после полной прокатки делегирования)
 - [ ] Снять скриншоты для защиты
 
 ## Секреты GitHub Actions
